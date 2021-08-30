@@ -1,0 +1,14 @@
+.container-fluid.px-0
+  nav.navbar.navbar-dark.bg-dark
+    .navbar-brand.d-flex
+      div JSON Schema Generator
+  .container-fluid.px-0
+    b-card(no-body)
+      b-card-header(header-tag='nav')
+        b-nav.mb-1(card-header tabs)
+          b-nav-item(@click="translate")
+            | 轉換
+      b-card-body.h-100(style="height: calc(100vh)")
+        .d-flex.align-items-center.justify-content-around.mt-2
+          textarea.w-50.h-100(v-model='sample')
+          textarea.w-50.h-100(v-model='result')
