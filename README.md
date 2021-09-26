@@ -4,4 +4,4 @@ webtool json schema generator
 
 ### Demo
 
-Demo [demo](https://josudoey.github.io/webtool-json-schema-generator)
+ [Link](https://josudoey.github.io/webtool-json-schema-generator)

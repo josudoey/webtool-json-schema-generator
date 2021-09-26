@@ -6,9 +6,7 @@ const publicPath = './'
 module.exports = {
   publicPath,
   distPath,
-  entry: {
-    index: path.join(projectPath, './vue/index.js')
-  },
+  entry: path.join(projectPath, './vue/entry.mjs'),
   html: {
     appMountId: 'app',
     appMountHtmlSnippet: '<router-view><div><i class="fa fa-spinner fa-spin fa-5x" aria-hidden="true"></i></div></router-view>',

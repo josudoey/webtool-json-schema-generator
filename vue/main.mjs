@@ -1,7 +1,7 @@
-import Vue from 'vue/dist/vue.esm'
+import Vue from 'vue'
 import Router from 'vue-router'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-import routes from './routes'
+import routes from './routes.js'
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'

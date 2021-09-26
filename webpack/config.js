@@ -2,13 +2,13 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 
-const { entry, html, distPath, publicPath } = require('../expose')
+const { entry, distPath, publicPath, html } = require('../expose')
 const webpackOutputPath = path.join(distPath, publicPath)
 module.exports = {
+  target: 'web',
+  mode: 'production',
   entry: entry,
   resolve: {
     alias: {
@@ -16,15 +16,33 @@ module.exports = {
     }
   },
   output: {
+    clean: true,
     path: webpackOutputPath,
     publicPath: publicPath,
     filename: '[contenthash].js',
     chunkFilename: '[contenthash].js'
   },
-  mode: 'production',
   optimization: {
     splitChunks: {
-      chunks: 'all'
+      chunks: 'async',
+      minSize: 20000,
+      minRemainingSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
     },
     minimizer: [
       new TerserPlugin({}),
@@ -43,21 +61,14 @@ module.exports = {
   module: {
     rules: [{
       test: /\.(png|jpe?g|gif|svg)$/,
-      loader: require.resolve('file-loader'),
-      options: {
-        outputPath: 'img',
-        publicPath: '../img',
-        useRelativePath: false,
-        name: '[contenthash].[ext]'
+      type: 'asset/resource',
+      generator: {
+        filename: 'img/[contenthash][ext]'
       }
     }, {
       test: /\.(woff2?|eot|ttf|otf)$/,
-      loader: require.resolve('file-loader'),
-      options: {
-        outputPath: 'fonts',
-        publicPath: '../fonts',
-        useRelativePath: false,
-        name: '[contenthash].[ext]'
+      generator: {
+        filename: 'fonts/[contenthash][ext]'
       }
     }, {
       test: /\.html$/,
@@ -68,7 +79,17 @@ module.exports = {
     }, {
       test: /render.pug$/,
       use: [{
-        loader: require.resolve('pug-loader')
+        loader: require.resolve('vue-loader/lib/loaders/templateLoader.js'),
+        options: {
+          minimize: {
+            collapseBooleanAttributes: true
+          }
+        }
+      }, {
+        loader: require.resolve('pug-html-loader'),
+        options: {
+          doctype: 'html'
+        }
       }]
     }, {
       test: /template.pug$/,
@@ -86,21 +107,10 @@ module.exports = {
         }
       }]
     }, {
-      test: /\.js$/,
-      exclude: /node_modules/,
-      use: [
-        require.resolve('cache-loader'),
-        require.resolve('thread-loader')
-      ]
-    }, {
       test: /module\.css$/,
       use: [{
         loader: MiniCssExtractPlugin.loader,
         options: {
-          esModule: true,
-          modules: {
-            namedExport: true
-          }
         }
       }, {
         loader: require.resolve('css-loader'),
@@ -109,7 +119,7 @@ module.exports = {
             namedExport: true,
             localIdentName: '__[hash:base64:5]'
           },
-          importLoaders: 1
+          importLoaders: 0
         }
       }]
     }, {
@@ -118,12 +128,11 @@ module.exports = {
       use: [{
         loader: MiniCssExtractPlugin.loader,
         options: {
-          esModule: true
         }
       }, {
         loader: require.resolve('css-loader'),
         options: {
-          importLoaders: 1
+          importLoaders: 0
         }
       }]
     }]
@@ -135,17 +144,9 @@ module.exports = {
     }),
     new HtmlWebpackPlugin(Object.assign({}, html, {
       inject: true,
-      template: require('html-webpack-template'),
+      template: path.resolve(__dirname, './template.ejs'),
       filename: './index.html',
       alwaysWriteToDisk: true
-    })),
-    new HtmlWebpackHarddiskPlugin()
+    }))
   ]
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.plugins.push(new CleanWebpackPlugin({
-    root: distPath,
-    cleanOnceBeforeBuildPatterns: [distPath]
-  }))
 }

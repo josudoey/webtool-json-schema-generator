@@ -1,4 +1,4 @@
-import template from './template.pug'
+import { render, staticRenderFns } from './render.pug'
 import schemaGenerator from '@stoplight/json-schema-generator'
 import YAML from 'js-yaml'
 import pick from 'lodash/pick'
@@ -6,7 +6,8 @@ import JSON5 from 'json5'
 const persistKey = 'state'
 const persistProps = ['type', 'sample', 'result']
 export default {
-  template,
+  render,
+  staticRenderFns,
   data: () => {
     return {
       type: 'json',

@@ -1,0 +1,12 @@
+.container-fluid.px-0
+  nav.navbar.navbar-dark.bg-dark
+    .navbar-brand.d-flex
+      div JSON Schema Generator
+  .container-fluid.px-0
+    b-form-radio-group.ml-2.p-0(v-model="type" @input="translate" size="sm")
+      b-form-radio(value="json") JSON
+      b-form-radio(value="yaml") YAML
+    b-card(no-body)
+      b-card-body
+        textarea.w-50(v-model='sample' @input="translate" style="min-height: calc(60vh)")
+        textarea.w-50(v-model='result'  style="min-height: calc(60vh)")
